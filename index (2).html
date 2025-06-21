@@ -98,6 +98,7 @@
       const heart = document.createElement('div');
       heart.classList.add('heart');
 
+      // Apenas os 20 primeiros são reais
       const isReal = i < totalHearts;
       heart.dataset.real = isReal;
 
@@ -119,6 +120,7 @@
       hearts.push(heart);
     }
 
+    // Embaralhar os corações
     hearts.sort(() => Math.random() - 0.5);
     hearts.forEach(h => container.appendChild(h));
   </script>
