@@ -5,55 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Encontre os Corações 💘</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
     body {
       background: linear-gradient(to bottom, #ffe0ec, #fcb7cf);
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Pacifico', cursive;
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      color: #6a0033;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     h1 {
       text-align: center;
-      font-size: 2.5em;
+      font-size: 3em;
       margin: 30px 10px 10px;
-      color: #a0004d;
+      text-shadow: 1px 1px 4px #d14a74;
     }
 
     #counter {
       text-align: center;
-      font-size: 1.5em;
-      color: #700034;
-      margin-bottom: 20px;
+      font-size: 1.8em;
+      color: #7d0042;
+      margin-bottom: 25px;
+      letter-spacing: 0.05em;
     }
 
     #game-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
       gap: 25px;
-      padding: 30px;
-      max-width: 1200px;
+      padding: 0 30px 40px;
+      max-width: 1100px;
       margin: 0 auto;
       justify-items: center;
+      flex-grow: 1;
     }
 
     .heart {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
-      background-size: cover;
+      background-size: contain;
+      background-repeat: no-repeat;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      filter: drop-shadow(0 3px 3px rgba(255, 105, 180, 0.7));
     }
 
     .heart:hover {
-      transform: scale(1.3);
+      transform: scale(1.4) rotate(10deg);
+      filter: drop-shadow(0 5px 5px rgba(255, 20, 147, 0.9));
     }
 
     .found {
-      opacity: 0.3;
+      opacity: 0.4;
       pointer-events: none;
-      transform: scale(0.8);
+      transform: scale(0.9) rotate(-15deg);
+      filter: grayscale(80%) drop-shadow(0 0 10px #e75480);
     }
 
     #victory-message {
@@ -61,17 +73,47 @@
       background: white;
       color: #6a0033;
       text-align: center;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 500px;
-      margin: 40px auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      animation: pop 0.6s ease;
+      padding: 35px 25px;
+      border-radius: 20px;
+      max-width: 520px;
+      margin: 40px auto 60px;
+      box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+      animation: pop 0.7s ease;
+      font-size: 1.5em;
+      letter-spacing: 0.05em;
+      font-weight: 600;
     }
 
     @keyframes pop {
       0% { transform: scale(0.5); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
+    }
+
+    #audio-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 192, 203, 0.8);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff69b4;
+      transition: background 0.3s ease;
+      z-index: 1000;
+    }
+
+    #audio-controls:hover {
+      background: rgba(255, 105, 180, 0.9);
+    }
+
+    #audio-icon {
+      width: 28px;
+      height: 28px;
+      fill: #6a0033;
     }
   </style>
 </head>
@@ -79,15 +121,31 @@
   <h1>💗 Encontre todos os 20 corações escondidos!</h1>
   <div id="counter">Corações encontrados: 0/20</div>
   <div id="game-container"></div>
+
   <div id="victory-message">
     <h2>🎉 Você encontrou todos os corações! 🎉</h2>
     <p>Parabéns, amor! Você venceu a primeira fase... prepare-se para a próxima surpresa 💌</p>
   </div>
 
+  <!-- Controle de Áudio -->
+  <div id="audio-controls" title="Tocar/Pausar Música">
+    <svg id="audio-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+    </svg>
+  </div>
+
+  <audio id="background-music" loop>
+    <source src="https://cdn.discordapp.com/attachments/1099238003221653830/1150130452951809072/Orochi_-_Mare_Vermelha_Instrumental_Official_Audio.mp3" type="audio/mpeg" />
+    Seu navegador não suporta o elemento de áudio.
+  </audio>
+
   <script>
     const container = document.getElementById('game-container');
     const counter = document.getElementById('counter');
     const victoryMessage = document.getElementById('victory-message');
+    const audio = document.getElementById('background-music');
+    const audioControls = document.getElementById('audio-controls');
+    const audioIcon = document.getElementById('audio-icon');
 
     let totalHearts = 20;
     let foundHearts = 0;
@@ -109,10 +167,12 @@
 
           if (foundHearts === totalHearts) {
             victoryMessage.style.display = 'block';
+            audio.pause();
           }
         } else {
-          heart.style.transform = "scale(0.8)";
-          setTimeout(() => heart.style.transform = "scale(1)", 150);
+          // Animação de erro
+          heart.style.transform = "scale(0.8) rotate(-10deg)";
+          setTimeout(() => heart.style.transform = "scale(1) rotate(0deg)", 150);
         }
       });
 
@@ -121,6 +181,21 @@
 
     hearts.sort(() => Math.random() - 0.5);
     hearts.forEach(h => container.appendChild(h));
+
+    // Começar música suave
+    audio.volume = 0.2;
+    audio.play().catch(() => {}); // para evitar erro em autoplay
+
+    // Controle play/pause
+    audioControls.addEventListener('click', () => {
+      if(audio.paused){
+        audio.play();
+        audioIcon.innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // ícone de play
+      } else {
+        audio.pause();
+        audioIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; // ícone de pause
+      }
+    });
   </script>
 </body>
 </html>
