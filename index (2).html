@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Encontre os Corações 💘</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #ffe0ec, #fcb7cf);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin: 30px 10px 20px;
+      color: #a0004d;
+    }
+
+    #counter {
+      text-align: center;
+      font-size: 1.5em;
+      color: #700034;
+      margin-bottom: 20px;
+    }
+
+    #game-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 25px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+      justify-items: center;
+    }
+
+    .heart {
+      width: 60px;
+      height: 60px;
+      background-image: url('https://i.imgur.com/9Y5aBvI.png');
+      background-size: cover;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .heart:hover {
+      transform: scale(1.3);
+    }
+
+    .found {
+      opacity: 0.3;
+      pointer-events: none;
+      transform: scale(0.8);
+    }
+
+    #victory-message {
+      display: none;
+      background: white;
+      color: #6a0033;
+      text-align: center;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      margin: 40px auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>💗 Encontre todos os 20 corações escondidos!</h1>
+  <div id="counter">Corações encontrados: 0/20</div>
+  <div id="game-container"></div>
+  <div id="victory-message">
+    <h2>🎉 Você encontrou todos os corações! 🎉</h2>
+    <p>Parabéns, amor! Você venceu a primeira fase... prepare-se para a próxima surpresa 💌</p>
+  </div>
+
+  <script>
+    const container = document.getElementById('game-container');
+    const counter = document.getElementById('counter');
+    const victoryMessage = document.getElementById('victory-message');
+
+    let totalHearts = 20;
+    let foundHearts = 0;
+
+    let hearts = [];
+
+    for (let i = 0; i < 60; i++) {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+
+      const isReal = i < totalHearts;
+      heart.dataset.real = isReal;
+
+      heart.addEventListener('click', () => {
+        if (heart.dataset.real === "true" && !heart.classList.contains('found')) {
+          heart.classList.add('found');
+          foundHearts++;
+          counter.textContent = `Corações encontrados: ${foundHearts}/${totalHearts}`;
+
+          if (foundHearts === totalHearts) {
+            victoryMessage.style.display = 'block';
+          }
+        } else {
+          heart.style.transform = "scale(0.8)";
+          setTimeout(() => heart.style.transform = "scale(1)", 150);
+        }
+      });
+
+      hearts.push(heart);
+    }
+
+    hearts.sort(() => Math.random() - 0.5);
+    hearts.forEach(h => container.appendChild(h));
+  </script>
+</body>
+</html>
