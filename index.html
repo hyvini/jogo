@@ -16,7 +16,7 @@
     h1 {
       text-align: center;
       font-size: 2.5em;
-      margin: 30px 10px 20px;
+      margin: 30px 10px 10px;
       color: #a0004d;
     }
 
@@ -40,7 +40,7 @@
     .heart {
       width: 60px;
       height: 60px;
-      background-image: url('https://i.imgur.com/9Y5aBvI.png');
+      background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
       background-size: cover;
       cursor: pointer;
       transition: transform 0.2s ease;
@@ -98,7 +98,6 @@
       const heart = document.createElement('div');
       heart.classList.add('heart');
 
-      // Apenas os 20 primeiros são reais
       const isReal = i < totalHearts;
       heart.dataset.real = isReal;
 
@@ -120,7 +119,6 @@
       hearts.push(heart);
     }
 
-    // Embaralhar os corações
     hearts.sort(() => Math.random() - 0.5);
     hearts.forEach(h => container.appendChild(h));
   </script>
