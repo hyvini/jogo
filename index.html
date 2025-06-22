@@ -17,6 +17,7 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      align-items: center;
     }
 
     h1 {
@@ -29,9 +30,7 @@
     #counter {
       text-align: center;
       font-size: 1.8em;
-      color: #7d0042;
       margin-bottom: 25px;
-      letter-spacing: 0.05em;
     }
 
     #game-container {
@@ -58,7 +57,6 @@
 
     .heart:hover {
       transform: scale(1.4) rotate(10deg);
-      filter: drop-shadow(0 5px 5px rgba(255, 20, 147, 0.9));
     }
 
     .found {
@@ -73,15 +71,13 @@
       background: white;
       color: #6a0033;
       text-align: center;
-      padding: 35px 25px;
-      border-radius: 20px;
+      padding: 30px;
+      border-radius: 15px;
       max-width: 520px;
-      margin: 40px auto 60px;
+      margin: 30px auto;
       box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
       animation: pop 0.7s ease;
       font-size: 1.5em;
-      letter-spacing: 0.05em;
-      font-weight: 600;
     }
 
     @keyframes pop {
@@ -89,11 +85,28 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    #start-button {
+      margin-top: 60px;
+      padding: 15px 30px;
+      font-size: 1.5em;
+      border: none;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff69b4;
+      transition: transform 0.2s ease;
+    }
+
+    #start-button:hover {
+      transform: scale(1.05);
+    }
+
     #audio-controls {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: rgba(255, 192, 203, 0.8);
+      background: rgba(255, 192, 203, 0.9);
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -102,46 +115,44 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 0 0 10px #ff69b4;
-      transition: background 0.3s ease;
       z-index: 1000;
     }
 
-    #audio-controls:hover {
-      background: rgba(255, 105, 180, 0.9);
-    }
-
     #audio-icon {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       fill: #6a0033;
     }
   </style>
 </head>
 <body>
-  <h1>💗 Encontre todos os 20 corações escondidos!</h1>
-  <div id="counter">Corações encontrados: 0/20</div>
-  <div id="game-container"></div>
 
+  <h1>💗 Encontre todos os 20 corações escondidos!</h1>
+  <button id="start-button">Começar o jogo</button>
+  <div id="counter" style="display:none;">Corações encontrados: 0/20</div>
+  <div id="game-container"></div>
   <div id="victory-message">
     <h2>🎉 Você encontrou todos os corações! 🎉</h2>
     <p>Parabéns, amor! Você venceu a primeira fase... prepare-se para a próxima surpresa 💌</p>
   </div>
 
-  <!-- Controle de Áudio -->
-  <div id="audio-controls" title="Tocar/Pausar Música">
-    <svg id="audio-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+  <!-- Música -->
+  <audio id="background-music" loop>
+    <source src="https://cdn.discordapp.com/attachments/1175878081887582288/1240731628793704488/Orochi_-_Mare_Vermelha_Instr.mp3" type="audio/mpeg" />
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <!-- Botão flutuante de controle -->
+  <div id="audio-controls" style="display:none;" title="Tocar/Pausar Música">
+    <svg id="audio-icon" viewBox="0 0 24 24">
+      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
     </svg>
   </div>
 
-  <audio id="background-music" loop>
-    <source src="https://cdn.discordapp.com/attachments/1099238003221653830/1150130452951809072/Orochi_-_Mare_Vermelha_Instrumental_Official_Audio.mp3" type="audio/mpeg" />
-    Seu navegador não suporta o elemento de áudio.
-  </audio>
-
   <script>
-    const container = document.getElementById('game-container');
+    const startBtn = document.getElementById('start-button');
     const counter = document.getElementById('counter');
+    const container = document.getElementById('game-container');
     const victoryMessage = document.getElementById('victory-message');
     const audio = document.getElementById('background-music');
     const audioControls = document.getElementById('audio-controls');
@@ -150,50 +161,59 @@
     let totalHearts = 20;
     let foundHearts = 0;
 
-    let hearts = [];
+    function setupGame() {
+      container.innerHTML = '';
+      foundHearts = 0;
+      counter.textContent = `Corações encontrados: ${foundHearts}/${totalHearts}`;
+      victoryMessage.style.display = 'none';
+      counter.style.display = 'block';
 
-    for (let i = 0; i < 60; i++) {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
+      let hearts = [];
 
-      const isReal = i < totalHearts;
-      heart.dataset.real = isReal;
+      for (let i = 0; i < 60; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
 
-      heart.addEventListener('click', () => {
-        if (heart.dataset.real === "true" && !heart.classList.contains('found')) {
-          heart.classList.add('found');
-          foundHearts++;
-          counter.textContent = `Corações encontrados: ${foundHearts}/${totalHearts}`;
+        const isReal = i < totalHearts;
+        heart.dataset.real = isReal;
 
-          if (foundHearts === totalHearts) {
-            victoryMessage.style.display = 'block';
-            audio.pause();
+        heart.addEventListener('click', () => {
+          if (heart.dataset.real === "true" && !heart.classList.contains('found')) {
+            heart.classList.add('found');
+            foundHearts++;
+            counter.textContent = `Corações encontrados: ${foundHearts}/${totalHearts}`;
+            if (foundHearts === totalHearts) {
+              victoryMessage.style.display = 'block';
+              audio.pause();
+            }
+          } else if (heart.dataset.real === "false") {
+            alert("Esse não era verdadeiro! Vamos tentar de novo 💔");
+            setupGame(); // Reinicia o jogo
           }
-        } else {
-          // Animação de erro
-          heart.style.transform = "scale(0.8) rotate(-10deg)";
-          setTimeout(() => heart.style.transform = "scale(1) rotate(0deg)", 150);
-        }
-      });
+        });
 
-      hearts.push(heart);
+        hearts.push(heart);
+      }
+
+      hearts.sort(() => Math.random() - 0.5);
+      hearts.forEach(h => container.appendChild(h));
     }
 
-    hearts.sort(() => Math.random() - 0.5);
-    hearts.forEach(h => container.appendChild(h));
+    startBtn.addEventListener('click', () => {
+      startBtn.style.display = 'none';
+      setupGame();
+      audio.volume = 0.2;
+      audio.play();
+      audioControls.style.display = 'flex';
+    });
 
-    // Começar música suave
-    audio.volume = 0.2;
-    audio.play().catch(() => {}); // para evitar erro em autoplay
-
-    // Controle play/pause
     audioControls.addEventListener('click', () => {
-      if(audio.paused){
+      if (audio.paused) {
         audio.play();
-        audioIcon.innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // ícone de play
+        audioIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause icon
       } else {
         audio.pause();
-        audioIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; // ícone de pause
+        audioIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; // play icon
       }
     });
   </script>
