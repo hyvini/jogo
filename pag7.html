@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedido Final</title>
+<link rel="icon" href="./assets/images/bow.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+
+<h1>🎀 Pedido Final</h1>
+<p class="big">Agora, pra oficializar...<br>
+Amor, eu amo você e quero você pra mim.<br>
+Quero que você seja minha, e que eu seja seu.<br><br>
+Então, eu te pergunto:<br><strong>Você aceita voltar comigo? Você aceita oficializar isso?</strong><br><br>
+<em>Nem que eu tenha que abrir mão de tudo, eu quero você comigo.</em></p>
+
+<div id="msg" class="badge">Escolha com carinho 💗</div>
+<div class="final-actions">
+  <button id="yes" class="btn">Sim</button>
+  <button id="no" class="btn btn-outline">Não</button>
+</div>
+
+<div id="overlay" class="overlay">
+  <div class="box card">
+    <h2>Ela disse SIIIIIM! 💖</h2>
+    <p>Te amo infinitamente. Que esse seja o nosso recomeço mais lindo.</p>
+    <div class="actions"><button class="btn" onclick="document.getElementById('overlay').classList.remove('show')">Fechar</button></div>
+  </div>
+</div>
+
+<script >
+import {{ burstHearts }} from './assets/js/confetti-hearts.js';
+
+const msgs = [
+  "Acho que você apertou no botão errado.",
+  "Opa, acho que você acabou confundindo de novo. Pode tentar de novo?",
+  "Tá continuando a errar por quê? Tá achando divertido?",
+  "Olha aqui, vai no botão do ‘Sim’ logo.",
+  "Para de ser teimosa, ele te ama, menina!"
+];
+
+let i = 0;
+const noBtn = document.getElementById('no');
+const yesBtn = document.getElementById('yes');
+const info = document.getElementById('msg');
+const overlay = document.getElementById('overlay');
+
+noBtn.addEventListener('click', ()=>{
+  info.textContent = msgs[i % msgs.length];
+  i++;
+  // playful move-away effect
+  const x = (Math.random()*60 - 30);
+  const y = (Math.random()*30 - 15);
+  noBtn.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+yesBtn.addEventListener('click', ()=>{
+  burstHearts();
+  overlay.classList.add('show');
+  info.textContent = "Final feliz desbloqueado! 💗";
+});
+</script>
+
+    </div>
+    <div class="footer-note">Feito com 💗 por Vini para Sofia — Tema Hello Kitty romântico (com corações e música).</div>
+  </div>
+  <script src="./assets/js/hearts-bg.js"></script>
+  <script src="./assets/js/music.js"></script>
+
+</body>
+</html>
